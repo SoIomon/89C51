@@ -1,0 +1,41 @@
+C51 COMPILER V9.52.0.0   MAIN                                                              11/30/2017 21:58:28 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: G:\keil\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          #define led1 P0
+   3          #define led2 P1
+   4          #define led3 P2
+   5          #define led4 P3
+   6          
+   7          //sbit led = P2^0;
+   8          
+   9          void main()
+  10          {
+  11   1        while(1)
+  12   1        {
+  13   2          led1 = 0xff;
+  14   2          led2 = 0xff;
+  15   2          led3 = 0xff;
+  16   2          led4 = 0xff;
+  17   2        }
+  18   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     14    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
