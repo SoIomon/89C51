@@ -1,0 +1,125 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        12/01/2017  21:08:17  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+G:\KEIL\C51\BIN\BL51.EXE main.obj TO template RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  main.obj (MAIN)
+  G:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  G:\KEIL\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  template (MAIN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0010H     UNIT         ?DT?MAIN
+            DATA    0018H     0001H     UNIT         _DATA_GROUP_
+            IDATA   0019H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     008CH     UNIT         ?C_C51STARTUP
+            CODE    008FH     002CH     UNIT         ?PR?MAIN?MAIN
+            CODE    00BBH     0022H     UNIT         ?PR?_HC595SENDBYTE?MAIN
+            CODE    00DDH     0015H     UNIT         ?C_INITSEG
+            CODE    00F2H     000BH     UNIT         ?PR?_DELAY?MAIN
+
+
+
+OVERLAY MAP OF MODULE:   template (MAIN)
+
+
+SEGMENT                           DATA_GROUP 
+  +--> CALLED SEGMENT           START    LENGTH
+-----------------------------------------------
+?C_C51STARTUP                   -----    -----
+  +--> ?PR?MAIN?MAIN
+  +--> ?C_INITSEG
+
+?PR?MAIN?MAIN                   0018H    0001H
+  +--> ?PR?_HC595SENDBYTE?MAIN
+  +--> ?PR?_DELAY?MAIN
+
+
+
+SYMBOL TABLE OF MODULE:  template (MAIN)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        MAIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/01/2017  21:08:17  PAGE 2
+
+
+  D:0080H         PUBLIC        P0
+  B:00B0H.6       PUBLIC        SRCLK
+  D:00B0H         PUBLIC        P3
+  C:00F2H         PUBLIC        _delay
+  D:0008H         PUBLIC        ledduanxuan
+  C:008FH         PUBLIC        main
+  B:00B0H.5       PUBLIC        RCLK
+  D:0010H         PUBLIC        ledweixuan
+  B:00B0H.4       PUBLIC        SER
+  C:00BBH         PUBLIC        _Hc595SendByte
+  -------         PROC          MAIN
+  -------         DO            
+  D:0018H         SYMBOL        i
+  -------         ENDDO         
+  C:008FH         LINE#         17
+  C:008FH         LINE#         18
+  C:008FH         LINE#         20
+  C:008FH         LINE#         21
+  C:008FH         LINE#         22
+  C:0092H         LINE#         23
+  C:0092H         LINE#         24
+  C:009AH         LINE#         25
+  C:00A4H         LINE#         26
+  C:00ABH         LINE#         27
+  C:00B0H         LINE#         28
+  -------         ENDPROC       MAIN
+  -------         PROC          _DELAY
+  D:0006H         SYMBOL        i
+  C:00F2H         LINE#         32
+  C:00F2H         LINE#         33
+  C:00F2H         LINE#         34
+  C:00FCH         LINE#         35
+  -------         ENDPROC       _DELAY
+  -------         PROC          _HC595SENDBYTE
+  D:0007H         SYMBOL        byte
+  -------         DO            
+  D:0006H         SYMBOL        i
+  -------         ENDDO         
+  C:00BBH         LINE#         37
+  C:00BBH         LINE#         38
+  C:00BBH         LINE#         39
+  C:00BDH         LINE#         40
+  C:00BFH         LINE#         41
+  C:00C1H         LINE#         42
+  C:00C1H         LINE#         43
+  C:00C1H         LINE#         44
+  C:00CCH         LINE#         45
+  C:00D0H         LINE#         46
+  C:00D2H         LINE#         47
+  C:00D4H         LINE#         48
+  C:00D8H         LINE#         49
+  C:00DAH         LINE#         50
+  C:00DCH         LINE#         51
+  -------         ENDPROC       _HC595SENDBYTE
+  -------         ENDMOD        MAIN
+
+Program Size: data=26.0 xdata=0 code=253
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/01/2017  21:08:17  PAGE 3
+
+
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)
