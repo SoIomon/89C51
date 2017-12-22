@@ -1,0 +1,257 @@
+C51 COMPILER V9.52.0.0   MAIN                                                              12/16/2017 14:37:49 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: G:\keil\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include "reg52.h"  
+   2          #include <math.h>
+   3          
+   4          typedef unsigned int u16; 
+   5          typedef unsigned char u8;
+   6          
+   7          #define GPIO_KEY P1
+   8          #define StartStopKey 5
+   9          #define PlusKey 1
+  10          #define SubKey 9
+  11          #define RightSwitch 6
+  12          #define LeftSwitch 4
+  13          #define ModSwitch 15
+  14          
+  15          sbit Beep=P1^5;
+  16          sbit ModLed=P2^0;
+  17          sbit RelayLed=P2^1;
+  18          
+  19          sbit LSA=P2^2;
+  20          sbit LSB=P2^3;
+  21          sbit LSC=P2^4;
+  22          
+  23          int Count10ms = 0;
+  24          int Count1s = 0;
+  25          int TimeArr[3] = {0};
+  26          int MODValue = 0;
+  27          int StartFlag = 0;
+  28          int KeyValue = 0;
+  29          int SetTimeBit = 0;
+  30          
+  31          u8 code smgduan[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,
+  32                              0x7f,0x6f,0x40,0x40};
+  33          
+  34          void TimerInit();
+  35          void Timer(); 
+  36          void ResetInit();
+  37          void ResetTimer();
+  38          void delay(u16 i);
+  39          void DigDisplayTime();
+  40          void KeyDown();
+  41          void CountDown();
+  42          void SetTime();
+  43          
+  44          void main()
+  45          { 
+  46   1        TimerInit();
+  47   1        ResetInit();
+  48   1        while(1)
+  49   1        { 
+  50   2          RelayLed =~ ModLed;
+  51   2          if(StartFlag)
+  52   2            CountDown();
+  53   2          else
+  54   2            SetTime();
+  55   2        }
+C51 COMPILER V9.52.0.0   MAIN                                                              12/16/2017 14:37:49 PAGE 2   
+
+  56   1      }
+  57          
+  58          void TimerInit()    //0.01s  10ms
+  59          {
+  60   1        TMOD = 0x01;
+  61   1        TH0 = 0xDC;
+  62   1        TL0 = 0x00;
+  63   1        EA = 1;
+  64   1        ET0 = 1;
+  65   1        TR0 = 1;
+  66   1        TimeArr[0] = 0;
+  67   1      }
+  68          
+  69          void Timer() interrupt 1
+  70          {
+  71   1        TH0 = 0xDC;
+  72   1        TL0 = 0x00;
+  73   1        Count10ms++;
+  74   1        Count1s++;
+  75   1        if(Count1s == 100)
+  76   1        {
+  77   2          if(StartFlag == 1)
+  78   2          {
+  79   3            if(TimeArr[0] == 0)
+  80   3            {
+  81   4              if(TimeArr[1])
+  82   4              {
+  83   5                TimeArr[1]--;
+  84   5                TimeArr[0] = 60;
+  85   5              }
+  86   4              else
+  87   4              {
+  88   5                if(TimeArr[2])
+  89   5                {
+  90   6                  TimeArr[2]--;
+  91   6                  TimeArr[1] = 59;
+  92   6                  TimeArr[0] = 60;
+  93   6                }
+  94   5                else
+  95   5                {
+  96   6                  StartFlag = 0;
+  97   6                }
+  98   5              }
+  99   4            }
+ 100   3            TimeArr[0]--;
+ 101   3          }
+ 102   2          Count1s = 0;
+ 103   2        }
+ 104   1        if(Count10ms == 2)
+ 105   1        {
+ 106   2          KeyDown();
+ 107   2          DigDisplayTime();
+ 108   2          Count10ms = 0;
+ 109   2        }
+ 110   1      }
+ 111          
+ 112          void ResetInit()
+ 113          {
+ 114   1        EA = 1;
+ 115   1        EX0 = 1;
+ 116   1        IT0 = 1;
+ 117   1      }
+C51 COMPILER V9.52.0.0   MAIN                                                              12/16/2017 14:37:49 PAGE 3   
+
+ 118          
+ 119          void ResetTimer() interrupt 0
+ 120          {
+ 121   1        TH0 = 0xDC;
+ 122   1        TL0 = 0x00;
+ 123   1        TimeArr[0] = 0;
+ 124   1        TimeArr[1] = 0;
+ 125   1        TimeArr[2] = 0;
+ 126   1      }
+ 127          
+ 128          void delay(u16 i)
+ 129          {
+ 130   1        while(i--); 
+ 131   1      }
+ 132          
+ 133          void DigDisplayTime()
+ 134          {
+ 135   1        int i,value;
+ 136   1        for(i=0;i<8;i++)
+ 137   1        {
+ 138   2          switch(i)
+ 139   2          {
+ 140   3            case(0):
+ 141   3              LSA=0;LSB=0;LSC=0;value=TimeArr[0]%10; break;
+ 142   3            case(1):
+ 143   3              LSA=1;LSB=0;LSC=0;value=TimeArr[0]/10; break;
+ 144   3            case(2):
+ 145   3              LSA=0;LSB=1;LSC=0;value=11; break;
+ 146   3            case(3):
+ 147   3              LSA=1;LSB=1;LSC=0;value=TimeArr[1]%10; break;
+ 148   3            case(4):
+ 149   3              LSA=0;LSB=0;LSC=1;value=TimeArr[1]/10; break;
+ 150   3            case(5):
+ 151   3              LSA=1;LSB=0;LSC=1;value=11; break;
+ 152   3            case(6):
+ 153   3              LSA=0;LSB=1;LSC=1;value=TimeArr[2]%10; break;
+ 154   3            case(7):
+ 155   3              LSA=1;LSB=1;LSC=1;value=TimeArr[2]/10; break; 
+ 156   3          }
+ 157   2          P0=smgduan[value];
+ 158   2          delay(50); 
+ 159   2          P0=0x00;
+ 160   2        }
+ 161   1      }
+ 162          
+ 163          void KeyDown()
+ 164          {
+ 165   1        GPIO_KEY=0x0f;
+ 166   1        if(GPIO_KEY!=0x0f)
+ 167   1        {
+ 168   2          Beep =~ Beep;
+ 169   2          delay(1000);
+ 170   2          Beep =~ Beep;
+ 171   2          if(GPIO_KEY!=0x0f)
+ 172   2          { 
+ 173   3            GPIO_KEY=0X0F;
+ 174   3            switch(GPIO_KEY)
+ 175   3            {
+ 176   4              case(0X07): KeyValue=0;break;
+ 177   4              case(0X0b): KeyValue=1;break;
+ 178   4              case(0X0d): KeyValue=2;break;
+ 179   4              case(0X0e): KeyValue=3;break;
+C51 COMPILER V9.52.0.0   MAIN                                                              12/16/2017 14:37:49 PAGE 4   
+
+ 180   4            }
+ 181   3            GPIO_KEY=0XF0;
+ 182   3            switch(GPIO_KEY)
+ 183   3            {
+ 184   4              case(0X70): KeyValue=KeyValue;break;
+ 185   4              case(0Xb0): KeyValue=KeyValue+4;break;
+ 186   4              case(0Xd0): KeyValue=KeyValue+8;break;
+ 187   4              case(0Xe0): KeyValue=KeyValue+12;break;
+ 188   4            }
+ 189   3            while(GPIO_KEY!=0xf0);
+ 190   3          }
+ 191   2        }
+ 192   1        else
+ 193   1          KeyValue = 0;
+ 194   1      }
+ 195          
+ 196          void CountDown()
+ 197          {
+ 198   1        u8 i;
+ 199   1        if((TimeArr[1] || TimeArr[2]) == 0 && TimeArr[0] < 5)
+ 200   1        {
+ 201   2          for(i=0;i<100;i++)
+ 202   2          {
+ 203   3            Beep =~ Beep;
+ 204   3            delay(100);
+ 205   3          }
+ 206   2        }
+ 207   1        if((TimeArr[0] || TimeArr[1] || TimeArr[2]) == 0)
+ 208   1        {
+ 209   2          StartFlag = 0;
+ 210   2          RelayLed =~ RelayLed;
+ 211   2          ModLed =~ ModLed;
+ 212   2        }
+ 213   1      }
+ 214          
+ 215          void SetTime()
+ 216          {
+ 217   1        switch(KeyValue)
+ 218   1        {
+ 219   2          case(StartStopKey): StartFlag = 1;break;
+ 220   2          case(LeftSwitch):  SetTimeBit=(SetTimeBit+1)%3;break;
+ 221   2          case(RightSwitch):  SetTimeBit=abs((SetTimeBit-1))%3;break;
+ 222   2          case(PlusKey):  TimeArr[SetTimeBit]++;break;
+ 223   2          case(SubKey):   TimeArr[SetTimeBit]=abs((TimeArr[SetTimeBit]-1))%100;break;
+ 224   2          case(ModSwitch):  ModLed =~ ModLed;RelayLed=~ModLed;break;
+ 225   2          default:break;
+ 226   2        }
+ 227   1        KeyValue = 0;
+ 228   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    858    ----
+   CONSTANT SIZE    =     12    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     18       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
